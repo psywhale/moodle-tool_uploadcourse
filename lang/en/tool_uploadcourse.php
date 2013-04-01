@@ -125,4 +125,6 @@ $string['coursetemplatename'] = 'Course template shortname';
 $string['coursetemplatename_help'] = 'Select an existing course shortname to use as a template for the creation of all courses.';
 $string['templatefile'] = 'Template backup file';
 $string['invalidbackupfile'] = 'Invalid backup file';
+$string['invaliduser'] = 'Userid or name not found';
+$string['invalidrole'] = 'Role not found';
 

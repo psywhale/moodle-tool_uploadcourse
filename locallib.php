@@ -71,7 +71,7 @@ function tool_uploadcourse_std_fields() {
 /**
  * process the upload
  *
- * @param object $formdata - object of the form data 
+ * @param object $formdata - object of the form data
  * @param object $cir - object of the CSV importer
  * @param array $filecolumns - file column definitions
  * @param string $restorefile - file to restore from
@@ -109,6 +109,10 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
     $strcoursenotdeletedmissing   = get_string('coursenotdeletedmissing', 'tool_uploadcourse');
     $strcoursenotdeletedoff       = get_string('coursenotdeletedoff', 'tool_uploadcourse');
     $errorstr                     = get_string('error');
+
+    //Added by Bas Brands: error for invalid users / roles
+    $invaliduser                  = get_string('invaliduser', 'tool_uploadcourse');
+    $invalidrole                  = get_string('invalidrole', 'tool_uploadcourse');
 
     $returnurl = new moodle_url('/admin/tool/uploadcourse/index.php');
     $bulknurl  = new moodle_url('/admin/tool/uploadcourse/index.php');
@@ -239,14 +243,24 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
                 $categories[]= $cat;
             }
             $course->category = 0;
+            $createdcategory = new stdClass();
+            $createdcategory->id = 0;
             foreach ($categories as $cat) {
                 // Does the category exist - does the category hierachy make sense.
+                if ($createdcategory->id) {
+                    $course->category = $createdcategory->id;
+                }
                 $category = $DB->get_record('course_categories', array('name'=>trim($cat), 'parent' => $course->category));
                 if (empty($category)) {
-                    $upt->track('status', get_string('invalidvalue', 'tool_uploadcourse', 'category'), 'error');
-                    $upt->track('category', $errorstr, 'error');
-                    $error = true;
-                    break;
+                    // Create a category
+                    $category = new stdClass();
+                    $category->name = trim($cat);
+                    $category->parent = $course->category;
+                    $category = create_course_category($category);
+                    //$upt->track('status', get_string('invalidvalue', 'tool_uploadcourse', 'category'), 'error');
+                    //$upt->track('category', $errorstr, 'error');
+                    //$error = true;
+                    //break;
                 }
                 $course->category = $category->id;
             }
@@ -270,10 +284,14 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
 
         // Check for enrolment methods.
         $line_fields = (array) $course;
+
         $enrolmethods = array();
         $enrolments = array();
+        $enrolusers = array();
         $error = false;
+
         foreach ($line_fields as $k => $v) {
+            //get enrolment info
             if (preg_match('/^(\w+)\_(\d+)$/', $k, $matches)) {
                 if (!isset($enrolments[$matches[2]])) {
                     $enrolments[$matches[2]] = array();
@@ -288,9 +306,18 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
                 }
                 $enrolments[$matches[2]][$matches[1]] = $v;
             }
+            //Added by Bas Brands: get users to enrol
+            if (preg_match('/^user(\d+)\_(\w+)$/', $k, $matches)) {
+                 if (!isset($enrolusers[$matches[1]])) {
+                    $enrolusers[$matches[1]] = array();
+                 }
+                 $enrolusers[$matches[1]][$matches[2]] = $v;
+            }
+
         }
+
         if ($error) {
-            continue;
+           continue;
         }
         foreach ($enrolmethods as $k => $v) {
             $enrolmethods[$k] = $enrolments[$v];
@@ -298,7 +325,11 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
 
         // Roles.
         $roles = get_all_roles();
+        //Added by Bas Brands: build a role shortname, rol id array
+        $enrolusersroles = array();
         foreach ($roles as $role) {
+            //Added by Bas Brands: build a role shortname, rol id array
+            $enrolusersroles[$role->shortname] = $role->id;
             if (isset($course->{$role->shortname})) {
                 if (in_array($role->shortname, array('teacher', 'editingteacher', 'student',
                                                      'manager', 'coursecreator', 'guest', 'user'))) {
@@ -478,6 +509,7 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
 
         // Can we process with update or insert?
         $skip = false;
+
         switch ($optype) {
             case CC_COURSE_ADDNEW:
                 if ($existingcourse) {
@@ -512,6 +544,8 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
                 $skip = true;
         }
 
+
+
         // Check for the backup file as template.
         $backupfile = null;
         if (!empty($course->backupfile)) {
@@ -542,6 +576,12 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
             $doupdate = false;
 
             if ($updatetype != CC_UPDATE_NOCHANGES) {
+                //Added by Bas Brands: Update when category changes
+                if ($existingcourse->category != $course->category) {
+                    $existingcourse->category = $course->category;
+                    $doupdate = true;
+                }
+
                 foreach ($std_fields as $column) {
                     if ($column === 'shortname') {
                         // These can not be changed here.
@@ -914,6 +954,26 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
             }
         }
 
+        // Added by Bas Brands: Enrol users in course
+        $manualenrol = enrol_get_plugin('manual');
+        foreach ($enrolusers as $enroluser) {
+
+            if (empty($enroluser['account'])) { continue; };
+            $user = $enrol = $roleid = NULL;
+
+            if (!$user = $DB->get_record('user', array('username' => $enroluser['account']))) {
+                $upt->track('status', $invaliduser . ': ' . $enroluser['account'], 'warning');
+                continue;
+            }
+            $enrol = $DB->get_record('enrol', array('courseid'=>$course->id, 'enrol'=>'manual'));
+            $roleid = $enrolusersroles[$enroluser['role']];
+            if (empty($roleid)) {
+                $upt->track('status', $invalidrole . ': ' . $enroluser['role'] . ' -> ' . $enroluser['account'], 'warning');
+                continue;
+            }
+            $manualenrol->enrol_user($enrol,$user->id,$roleid);
+        }
+
         // Do the course reset.
         if ($resetcourse) {
             $resetdata = new stdClass();
@@ -1176,7 +1236,10 @@ function tool_uploadcourse_validate_course_upload_columns(csv_import_reader $cir
         } else if (preg_match('/^\w+\_\d+$/', $lcfield)) {
             // Special fields for enrolments.
             $newfield = $lcfield;
-
+        //Added by Bas Brands: get user info from CSV
+        } else if (preg_match('/^user\d+\_(\w+)$/', $lcfield)) {
+            // Special fields for enrolling users.
+            $newfield = $lcfield;
         } else {
             $cir->close();
             $cir->cleanup();
