@@ -1,3 +1,21 @@
+Added functionality
+===================
+Categories are created from the category column in the CSV file
+Nested categories are allowed, the course is added to the last
+element of the category tree.
+
+Users can be enrolled to the course using user{n}_account, user{n}_role
+Users are added to the manual enrolment method. There is no limit to the number of users
+that can be added.
+A valid CSV addition could look like:
+
+user1_account,user1_role,user2_account,user2_role,user3_account,user3_role
+lauraleach,editingteacher,dirkdiggel,teacher,freddyfingers,student
+freddyfingers,student,,,siemsjans,teacher
+
+
+Original Readme:
+
 moodle-tool_uploadcourse
 ========================
 
@@ -10,7 +28,7 @@ https://gitorious.org/moodle-tool_uploadcourse
 
 There is also a bulk course category upload function available at https://gitorious.org/moodle-tool_uploadcoursecategory
 
-If you need to manage course enrolments via bulk upload then you should look at 
+If you need to manage course enrolments via bulk upload then you should look at
 the core user upload facility - http://docs.moodle.org/22/en/Upload_users
 
 This takes CSV files as input and enables override or augmentation
@@ -90,16 +108,16 @@ a back slash eg:  'some\/category'.
 Course Templating
 =================
 add column backupfile which has the fully qualified path name to a file on
-the server that has a a Moodle course backup in it. 
+the server that has a a Moodle course backup in it.
 
-Add a column templatename which is the shortname of an existing course that 
+Add a column templatename which is the shortname of an existing course that
 will be copied over the top of the new course.
 
 Course Enrolment Methods
 =========================
 
-Enrolment methods need special CSV columns as there can be many per course, and the fields for each 
-method are flexible.  The following is an example with two enrolment methods - manual, and self - firstly you need 
+Enrolment methods need special CSV columns as there can be many per course, and the fields for each
+method are flexible.  The following is an example with two enrolment methods - manual, and self - firstly you need
 the column identifying the enrolment method enrolmethod_<n>, and then add the corresponding field values subscripted with _<n>.
 eg:
 fullname,shortname,category,idnumber,summary,enrolmethod_1,status_1,enrolmethod_2,name_2,password_2,customtext1_2
@@ -136,7 +154,7 @@ Update Course:
 =================
 Make sure you have shortname in the csv. After uploading the file, select:
 Upload type: one of the update existing related options
-Existing course details: Overide with file 
+Existing course details: Overide with file
 Allow Renames: Yes
 
 Update example:
@@ -177,7 +195,7 @@ Point your browser at Moodle, and login as admin.  This should kick off
 the upgrade so that Moodle can now recognise the new plugin.
 
 This was inspired in part by a need for a complimentary function for uploading
-courses (as for users) for the the NZ MLE tools for Identity and 
+courses (as for users) for the the NZ MLE tools for Identity and
 Access Managment (synchronising users with the School SMS):
 https://gitorious.org/pla-udi
 and
