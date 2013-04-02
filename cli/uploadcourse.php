@@ -177,9 +177,9 @@ if ($options['category']) {
         // Does the category exist - does the category hierachy make sense.
         $category = $DB->get_record('course_categories', array('name'=>trim($cat), 'parent' => $options['category']));
         if (empty($category)) {
-            echo get_string('invalidcategory', 'tool_uploadcourse')."\n";
-            echo $help;
-            die;
+            //echo get_string('invalidcategory', 'tool_uploadcourse')."\n";
+            //echo $help;
+            //die;
         }
         $options['category'] = $category->id;
     }
