@@ -1,6 +1,6 @@
-fullname,shortname,category,idnumber,summary,format,showgrades,newsitems,startdate,numsections,maxbytes,showreports,visible,hiddensections,groupmode,groupmodeforce,enablecompletion,completionstartonenrol,lang,deleted,user1_account,user1_role,user2_account,user2_role,enrolmethod_1,status_1,enrolmethod_2,status_2,name_2,password_2,customtext1_2
-Gingerbread tasting,GBT,Bakery/Tasting,101,0,weeks,0,2,13-Aug-13,5,10240,1,1,0,0,0,0,0,en,0,dirk,teacher,aas,editingteacher,manual,1,self,0,selfA,aaa,Custom 1
-Marshmallow roasting,MMR,Candystore/General Knowledge/A,102,"Welcome to the Candystore, Did you bring your Marshmellows?",topics,0,2,13-Aug-13,0,10096,1,1,0,0,0,0,0,en,0,aas,teacher,laura,editingteacher,manual,0,self,0,selfB,bbb,Lorum
-Wafer magic,WM,Bakery/Tasting,103,This is Fun,weeks,0,2,13-Aug-13,7,10096,1,1,0,0,0,0,0,en,0,laura,consultant,fred,teacher,manual,1,self,0,selfC,ccc,Your
-Jelly beans index,JBI,Candystore/General Knowledge/B,104,"Welcome to the Candystore, Did you bring your Jelly beans?",topics,0,2,13-Aug-13,4,10096,1,0,0,0,0,0,0,en,0,freddy,teacher,,,manual,0,self,1,,,
-Gummy Bears United,GBU,Candystore/General Knowledge/A,105,"Welcome to the Candystore, Did you bring your Gummy Bears?",topics,0,0,5-May-13,3,10240,0,1,1,0,0,0,0,en,0,siem,teacher,,,manual,1,self,1,,,
+fullname;shortname;category;idnumber;summary;format;showgrades;newsitems;startdate;numsections;maxbytes;showreports;visible;hiddensections;groupmode;groupmodeforce;enablecompletion;completionstartonenrol;lang;deleted;user1_account;user1_role;user2_account;user2_role;enrolmethod_1;status_1;enrolmethod_2;status_2;name_2;password_2;customtext1_2
+Gingerbread tasting;GBT;Bakery/Tasting;101;0;weeks;0;2;13-Aug-13;5;10240;1;1;0;0;0;0;0;en;0;7;teacher;3;editingteacher;manual;1;self;0;selfA;aaa;Custom 1
+Marshmallow roasting;MMR;Candystore/General Knowledge/A;102;Welcome to the Candystore, Did you bring your Marshmellows?;topics;0;2;13-Aug-13;0;10096;1;1;0;0;0;0;0;en;0;3;teacher;16;editingteacher;manual;0;self;0;selfB;bbb;Lorum
+Wafer magic;WM;Bakery/Tasting;103;This is Fun;weeks;0;2;13-Aug-13;7;10096;1;1;0;0;0;0;0;en;0;16;consultant;10;teacher;manual;1;self;0;selfC;ccc;Your
+Jelly beans index;JBI;Candystore/General Knowledge/B;104;Welcome to the Candystore, Did you bring your Jelly beans?;topics;0;2;13-Aug-13;4;10096;1;0;0;0;0;0;0;en;0;9;teacher;;;manual;0;self;1;;;
+Gummy Bears United;GBU;Candystore/General Knowledge/A;105;Welcome to the Candystore, Did you bring your Gummy Bears?;topics;0;0;5-May-13;3;10240;0;1;1;0;0;0;0;en;0;23;teacher;;;manual;1;self;1;;;
