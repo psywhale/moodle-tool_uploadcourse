@@ -961,7 +961,8 @@ function tool_uploadcourse_process_course_upload($formdata, $cir, $filecolumns, 
             if (empty($enroluser['account'])) { continue; };
             $user = $enrol = $roleid = NULL;
 
-            if (!$user = $DB->get_record('user', array('id' => $enroluser['account']))) {
+            //get user from username not id
+            if (!$user = $DB->get_record('user', array('username' => $enroluser['account']))) {
                 $upt->track('status', $invaliduser . ': ' . $enroluser['account'], 'warning');
                 continue;
             }
